@@ -1,5 +1,7 @@
 #!/bin/bash
 
+KUBERNETES_VERSION=1.16.9
+``
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
@@ -11,7 +13,7 @@ gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors
 EOF
 setenforce 0
 sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
-yum install -y kubelet kubeadm kubectl
+yum install -y kubelet-$KUBERNETES_VERSION-0 kubeadm-$KUBERNETES_VERSION-0 kubectl-$KUBERNETES_VERSION-0
 systemctl enable kubelet && systemctl start kubelet
 
 yum install -y yum-utils device-mapper-persistent-data lvm2

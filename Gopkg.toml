@@ -1,0 +1,9 @@
+[[constraint]]
+  name = "k8s.io/api"
+  version = "v0.18.8"
+[[constraint]]
+  name = "k8s.io/apimachinery"
+  version = "v0.18.8"
+[[constraint]]
+  name = "k8s.io/client-go"
+  version = "v0.18.8"
