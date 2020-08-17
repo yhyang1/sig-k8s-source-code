@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -18,7 +19,7 @@ import (
 func main() {
 	var kubeconfig *string
 	if home := homeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "custom-contexts/kubernetes/kubernetes.yml"), "(optional) absolute path to the kubeconfig file")
 	} else {
 		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
@@ -35,6 +36,7 @@ func main() {
 	config.NegotiatedSerializer = scheme.Codecs
 
 	DemoRestClient(config)
+	DemoClientSet(config)
 }
 
 func homeDir() string {
@@ -58,11 +60,36 @@ func DemoRestClient(config *rest.Config) {
 	if err != nil {
 		panic(err.Error())
 	}
+	fmt.Println("Demo RESTClient:")
 	for _, d := range result.Items {
 		fmt.Println(d.Namespace, d.Name, d.Status.Phase)
 	}
 }
 
 func DemoClientSet(config *rest.Config) {
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+	podClient := clientset.CoreV1().Pods(corev1.NamespaceAll) // k8s.io/core/v1.NamespaceAll
+	list, err := podClient.List(context.TODO(), metav1.ListOptions{Limit: 500})
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println("Demo ClientSet:")
+	for _, d := range list.Items {
+		fmt.Println(d.Namespace, d.Name, d.Status.Phase)
+	}
+}
+
+func DynamicClient(config *rest.Config) {
+	dynamicClient, err := dynamec.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+}
+
+func DiscoveryClient(config *rest.Config) {
 
 }
