@@ -24,7 +24,18 @@ func main() {
 		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
 	flag.Parse()
+	DemoRestClient(kubeconfig)
+	DemoClientSet(kubeconfig)
+}
 
+func homeDir() string {
+	if h := os.Getenv("HOME"); h != "" {
+		return h
+	}
+	return os.Getenv("USERPROFILE") // windows
+}
+
+func DemoRestClient(kubeconfig *string) {
 	// use the current context in kubeconfig
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
@@ -35,18 +46,6 @@ func main() {
 	config.GroupVersion = &corev1.SchemeGroupVersion
 	config.NegotiatedSerializer = scheme.Codecs
 
-	DemoRestClient(config)
-	DemoClientSet(config)
-}
-
-func homeDir() string {
-	if h := os.Getenv("HOME"); h != "" {
-		return h
-	}
-	return os.Getenv("USERPROFILE") // windows
-}
-
-func DemoRestClient(config *rest.Config) {
 	// create the clientset
 	restClient, err := rest.RESTClientFor(config)
 	if err != nil {
@@ -66,7 +65,16 @@ func DemoRestClient(config *rest.Config) {
 	}
 }
 
-func DemoClientSet(config *rest.Config) {
+func DemoClientSet(kubeconfig *string) {
+	// use the current context in kubeconfig
+	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	//			config.APIPath = "api"
+	//			config.GroupVersion = &corev1.SchemeGroupVersion
+	//			config.NegotiatedSerializer = scheme.Codecs
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
@@ -82,14 +90,10 @@ func DemoClientSet(config *rest.Config) {
 	}
 }
 
-func DynamicClient(config *rest.Config) {
-	dynamicClient, err := dynamec.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	}
+func DynamicClient(kubeconfig *string) {
 
 }
 
-func DiscoveryClient(config *rest.Config) {
+func DiscoveryClient(kubeconfig *string) {
 
 }
